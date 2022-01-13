@@ -1,0 +1,11 @@
+[alias]
+  yolo = !git commit -m \"$(curl http://whatthecommit.com/index.txt)\"
+	change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f"
+	adog = log --all --decorate --oneline --graph
+[user]
+	email = 
+	name = gOAT
+[core]
+	autocrlf = true
+	editor = vim
+[global]
