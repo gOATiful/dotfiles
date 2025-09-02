@@ -1,0 +1,28 @@
+alias listgpus='scontrol show nodes | awk '"'"'
+/NodeName=/ {
+    split($1,a,"="); nodename=a[2]
+    total=0; used=0
+}
+/CfgTRES=/ {
+    if (match($0, /gres\/gpu=([0-9]+)/, m)) total=m[1]
+}
+/AllocTRES=/ {
+    used=0
+    if (match($0, /gres\/gpu=([0-9]+)/, m)) used=m[1]
+
+    if (total > 0) {
+        cmd = "scontrol show node " nodename
+        state=""; reason=""
+        while ((cmd | getline line) > 0) {
+            if (state=="" && match(line, /State=([^ ]+)/, s)) state=s[1]
+            if (reason=="" && match(line, /Reason=(.*)$/, r)) reason=r[1]
+        }
+        close(cmd)
+
+        printf "%s: %d/%d", nodename, used, total
+        if (state  != "") printf " | State=%s",  state
+        if (reason != "") printf " | Reason=%s", reason
+        printf "\n"
+    }
+}
+'"'"''
